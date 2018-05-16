@@ -20,10 +20,10 @@ def implied_volatility(price_ ,S, K, T, r, callPutFlag = 'c'):
 #test
 if __name__ == '__main__':
     #correct : call 3.68
-    print price(49.0, 50.0, 1.0, 0.01, 0.2, 'C')
+    print (price(49.0, 50.0, 1.0, 0.01, 0.2, 'C'))
     #correct : put 4.18
-    print price(49.0, 50.0, 1.0, 0.01, 0.2, 'P')
+    print (price(49.0, 50.0, 1.0, 0.01, 0.2, 'P'))
     #correct : 0.2
-    print implied_volatility(3.68, 49.0, 50.0, 1.0, 0.01, 'C')
+    print (implied_volatility(3.68, 49.0, 50.0, 1.0, 0.01, 'C'))
     #correct : 0.2
-    print implied_volatility(4.18, 49.0, 50.0, 1.0, 0.01, 'P')
+    print (implied_volatility(4.18, 49.0, 50.0, 1.0, 0.01, 'P'))
