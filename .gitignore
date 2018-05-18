@@ -10,3 +10,11 @@
 .idea/workspace.xml
 
 .DS_Store
+
+
+
+
+venv/*.*
+*.pyd
+
+venv/

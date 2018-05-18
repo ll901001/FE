@@ -29,9 +29,9 @@ def __f(phi, kappa, theta, sigma, rho, v0, r, T, s0, status):
     x = log(s0)
     d = sqrt((rho * sigma * phi * 1j - b)**2 - sigma**2 * (2 * u * phi * 1j - phi**2))
     g = (b - rho * sigma * phi * 1j + d) / (b - rho * sigma * phi * 1j - d)
-    C = r * phi * 1j * T + (a / sigma**2)*((b - rho * sigma * phi * 1j + d) * T - 2 * log((1 - g * exp(d * T))/(1 - g)))
-    D = (b - rho * sigma * phi * 1j + d) / sigma**2 * ((1 - exp(d * T)) / (1 - g * exp(d * T)))
-    return exp(C + D * v0 + 1j * phi * x)
+    A = r * phi * 1j * T + (a / sigma**2)*((b - rho * sigma * phi * 1j + d) * T - 2 * log((1 - g * exp(d * T))/(1 - g)))
+    B1 = (b - rho * sigma * phi * 1j + d) / sigma**2 * ((1 - exp(d * T)) / (1 - g * exp(d * T)))
+    return exp(A + B1 * v0 + 1j * phi * x)
     
     
     
@@ -70,7 +70,7 @@ if __name__ == '__main__':
         #calc option price
         price = call_price(kappa, theta, sigma, rho, v0 ,r ,T ,s0 ,k)
         #calc implied volatility
-        imp_vol = np.append(imp_vol, black_sholes.implied_volatility(price, s0, k, T, r, 'C'))
+        imp_vol = np.append(imp_vol, black_sholes.implied_vol(price, s0, k, T, r, 'C'))
         print (k, price, imp_vol[-1])
 
     #plot result
