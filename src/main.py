@@ -17,7 +17,7 @@ def sample_data():
 def calibrate(init_val, market_datas):
     def error(x, market_datas):
         kappa, theta, sigma, rho, v0 = x
-        print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
+        # print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
         result = 0.0
         for market_data in market_datas:
             s0, k, market_price, r, T = market_data
@@ -25,28 +25,31 @@ def calibrate(init_val, market_datas):
             heston_price = heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k)
             result += (heston_price - market_price)**2
         return result
-    opt = fmin(error, init_val, args = (market_datas,), maxiter = 100)
+    opt = fmin(error, init_val, args = (market_datas,), maxiter = 20)
     return opt
 
-#load market data
-header, market_datas = sample_data()
-market_datas = [[25,22.5,6.560041967,0.05,2]]
-#Initialize kappa, theta, sigma, rho, v0
-init_val = [1.1, 0.1, 0.4, -0.0, 0.1]
-#calibration of parameters
-test = calibrate(init_val, market_datas)
-[kappa, theta, sigma, rho, v0] = calibrate(init_val, market_datas)
-#
-market_prices = np.array([])
-heston_prices = np.array([])
-K = np.array([])
-for market_data in market_datas:
-    s0, k, market_price, r, T = market_data
-    heston_prices = np.append(heston_prices, heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k))
-    market_prices = np.append(market_prices, market_price)
-    K = np.append(K,k)
-#plot result
-plt.plot(K, market_prices, 'g*',K, heston_prices, 'b')
-plt.xlabel('Strike (K)')
-plt.ylabel('Price')
-plt.show()
+
+if __name__ == '__main__':
+    #load market data
+    header, market_datas = sample_data()
+    market_datas = [[25,22.5,6.560041967,0.05,2], [25, 23, 6.259896679, 0.05,2]]
+    #Initialize kappa, theta, sigma, rho, v0
+    init_val = [1.1, 0.1, 0.4, -0.0, 0.1]
+    #calibration of parameters
+    test = calibrate(init_val, market_datas)
+    [kappa, theta, sigma, rho, v0] = calibrate(init_val, market_datas)
+    print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
+    #
+    market_prices = np.array([])
+    heston_prices = np.array([])
+    K = np.array([])
+    for market_data in market_datas:
+        s0, k, market_price, r, T = market_data
+        heston_prices = np.append(heston_prices, heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k))
+        market_prices = np.append(market_prices, market_price)
+        K = np.append(K,k)
+    #plot result
+    plt.plot(K, market_prices, 'g*',K, heston_prices, 'b')
+    plt.xlabel('Strike (K)')
+    plt.ylabel('Price')
+    plt.show()
