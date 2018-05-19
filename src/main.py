@@ -17,7 +17,7 @@ def sample_data():
 def calibrate(init_val, market_datas):
     def error(x, market_datas):
         kappa, theta, sigma, rho, v0 = x
-        print (kappa, theta, sigma, rho, v0)
+        print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
         result = 0.0
         for market_data in market_datas:
             s0, k, market_price, r, T = market_data
@@ -25,7 +25,7 @@ def calibrate(init_val, market_datas):
             heston_price = heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k)
             result += (heston_price - market_price)**2
         return result
-    opt = fmin(error, init_val, args = (market_datas,), maxiter = 20)
+    opt = fmin(error, init_val, args = (market_datas,), maxiter = 100)
     return opt
 
 #load market data
