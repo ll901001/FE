@@ -57,11 +57,11 @@ if __name__ == '__main__':
     #Initial volatility
     v0 = 0.1
     #0.634
-    print (call_price(kappa, theta, sigma, rho, v0, r, T, s0, 0.5))
+    print ("call_price: {0}".format(call_price(kappa, theta, sigma, rho, v0, r, T, s0, 0.5)))
     #0.384
-    print (call_price(kappa, theta, sigma, rho, v0, r, T, s0, 1.0))
+    print ("call_price: {0}".format(call_price(kappa, theta, sigma, rho, v0, r, T, s0, 1.0)))
     #0.176
-    print (call_price(kappa, theta, sigma, rho, v0, r, T, s0, 1.5))
+    print ("call_price: {0}".format(call_price(kappa, theta, sigma, rho, v0, r, T, s0, 1.5)))
     #Strikes
     K = np.arange(0.1, 5.0, 0.25)
     #simulation
@@ -71,7 +71,7 @@ if __name__ == '__main__':
         price = call_price(kappa, theta, sigma, rho, v0 ,r ,T ,s0 ,k)
         #calc implied volatility
         imp_vol = np.append(imp_vol, black_sholes.implied_vol(price, s0, k, T, r, 'C'))
-        print (k, price, imp_vol[-1])
+        print ("k: {0} , price: {1}, imp_vol: {2}".format(k , price, imp_vol[-1]))
 
     #plot result
     plt.plot(K, imp_vol)

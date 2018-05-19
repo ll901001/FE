@@ -17,7 +17,7 @@ def sample_data():
 def calibrate(init_val, market_datas):
     def error(x, market_datas):
         kappa, theta, sigma, rho, v0 = x
-        print (kappa, theta, sigma, rho, v0)
+        print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
         result = 0.0
         for market_data in market_datas:
             s0, k, market_price, r, T = market_data

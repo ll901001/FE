@@ -18,10 +18,10 @@ def implied_vol(marketPrice, S, K, T, r, callPutFlag ='c'):
     return fmin_bfgs(Objective, 1, disp = False)[0]
 
 #correct : call 3.68
-print (BSPrice(49.0, 50.0, 1.0, 0.01, 0.2, 'C'))
+print ("BlackS Print: {0}".format(BSPrice(49.0, 50.0, 1.0, 0.01, 0.2, 'C')))
 #correct : put 4.18
-print (BSPrice(49.0, 50.0, 1.0, 0.01, 0.2, 'P'))
+print ("BlackS Print: {0}".format(BSPrice(49.0, 50.0, 1.0, 0.01, 0.2, 'P')))
 #correct : 0.2
-print (implied_vol(3.68, 49.0, 50.0, 1.0, 0.01, 'C'))
+print ("BlackS Print: {0}".format(implied_vol(3.68, 49.0, 50.0, 1.0, 0.01, 'C')))
 #correct : 0.2
-print (implied_vol(4.18, 49.0, 50.0, 1.0, 0.01, 'P'))
+print ("BlackS Print: {0}".format(implied_vol(4.18, 49.0, 50.0, 1.0, 0.01, 'P')))
