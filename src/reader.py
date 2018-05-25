@@ -11,4 +11,5 @@ def getArrays (year):
     print(len(arrays))
     return arrays
 
-# getArrays()
+if __name__ == '__main__':
+    getArrays("2017")
