@@ -16,9 +16,9 @@ def sample_data():
 def calibrate(init_val, market_datas):
 
     opt = minimize(error, init_val, args = (market_datas,),
-                   bounds = ((0.1, 0.5),(0.01, 0.4), (0.1,0.99),(-0.99,-0.045),
-                             (1,5),(0.01, 0.5),(0.01,0.6), (-0.89,-0.45),(0.01,0.5),(0.01,0.5)),
-                   method='BFGS',options = {'maxiter': 20})
+                   bounds = ((0.1, 0.5),(0.01, 0.4), (0.1,0.99),(-0.99,-0.045),(0.01,0.5),
+                             (1,5),(0.01, 0.5),(0.01,0.6), (-0.89,-0.45),(0.01,0.5)),
+                   method='L-BFGS-B',options = {'maxiter': 20})
     # opt = fmin(error, init_val, args=(market_datas,),maxiter= 20)
     return opt
 
