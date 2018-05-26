@@ -2,7 +2,7 @@
 import numpy as np
 import matplotlib.pyplot as plt
 from src import black_sholes, heston,reader
-from scipy.optimize import fmin
+from scipy.optimize import minimize
 import pandas as pd
 
 #sample market data
@@ -19,8 +19,6 @@ def calibrate(init_val, market_datas):
     def error(x, market_datas):
         kappa, theta, sigma, rho, v0 = x
         print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
-        if v0 < 0:
-            v0 = 0.08
         result = 0.0
         for market_data in market_datas:
             s0, k, market_price, r, T = market_data
@@ -29,7 +27,7 @@ def calibrate(init_val, market_datas):
             heston_price = heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k)
             result += (heston_price - market_price)**2
         return result
-    opt = fmin(error, init_val, args = (market_datas,), maxiter = 20)
+    opt = minimize(error, init_val, args = (market_datas,), options = {'maxiter': 20}, bounds = ((0.01,5),(0.01,1),(0.01, 1),(-1,-0.01),(0.01,1)))
     return opt
 
 
@@ -37,16 +35,17 @@ if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2008","2009","2010"]:
+    for yearNumber in ["2008"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
         init_val = [1.1, 0.1, 0.4, -0.6, 0.1]
         #calibration of parameters
-        test = calibrate(init_val, market_datas)
-        [kappa, theta, sigma, rho, v0] = calibrate(init_val, market_datas)
+        # test = calibrate(init_val, market_datas)
+        [kappa, theta, sigma, rho, v0] = calibrate(init_val, market_datas).x
         print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
-        result = pd.DataFrame([kappa, theta, sigma, rho, v0])
+
+        result = pd.DataFrame([kappa, theta, sigma, rho, v0] )
         result.to_csv("cal"+yearNumber+".csv")
 
     #
