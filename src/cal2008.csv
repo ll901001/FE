@@ -1,3 +1,0 @@
-,fun,hess_inv,jac,message,nfev,nit,status,success,x
-0,6665055.3417651085,<5x5 LbfgsInvHessProduct with dtype=float64>,"[ 6.92903996e+01  2.98023224e+01 -7.62753189e+01  1.35293230e+03
-  1.21937692e+05]",b'CONVERGENCE: REL_REDUCTION_OF_F_<=_FACTR*EPSMCH',216,8,0,True,[ 0.01        0.01        0.07469835 -1.          0.01      ]

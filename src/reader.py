@@ -7,7 +7,7 @@ def getArrays (year):
     result = result.reset_index(drop=True)
     result["dtm"]= result['dtm'].divide(360)
     result["vega"] = result['vega'].divide(100)
-    arrays = result.head(10).as_matrix()
+    arrays = result.as_matrix()
 
     print(len(arrays))
     print(result.head(2))

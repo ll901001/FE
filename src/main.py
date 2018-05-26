@@ -1,6 +1,4 @@
-# -*- coding: utf-8 -*-
-import numpy as np
-import matplotlib.pyplot as plt
+#
 from src import black_sholes, heston,reader
 from scipy.optimize import minimize, fmin
 import pandas as pd
@@ -47,7 +45,7 @@ if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2014"]:
+    for yearNumber in ["2012","2013","2014","2015","2016","2017"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
