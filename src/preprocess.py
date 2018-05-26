@@ -14,7 +14,7 @@ for file in file_list:
 
     result = pd.merge(option, index, how='inner', on=['date'])
 
-    result["S/K"] = result["strike_price"]/result["close"]
+    result["S/K"] = result["close"]/result["strike_price"]
 
     date_format = "%Y%m%d"
     result["date"] = pd.to_datetime(result["date"], format=date_format)
@@ -22,13 +22,14 @@ for file in file_list:
     result["day_diff"] = result["exdate"] - result["date"]
     result["day_diff"] = result["day_diff"].astype('timedelta64[D]')
 
-    # result = result[result["day_diff"] < 360]
-    # result = result[result["day_diff"] > 14]
-    # result = result[(result["day_diff"] == 30) | (result["day_diff"] == 60) | (result["day_diff"] == 90) | (
-    #             result["day_diff"] == 120) | (result["day_diff"] == 150) | (result["day_diff"] == 180) | (
-    #                             result["day_diff"] == 210) | (result["day_diff"] == 240) | (result["day_diff"] == 270)]
-    # result = result[result["S/K"] > 0.7]
-    # result = result[result["S/K"] < 1.3]
+    result = result[result["vega"] > 0]
+    result = result[result["day_diff"] < 360]
+    result = result[result["day_diff"] > 14]
+    result = result[(result["day_diff"] == 30).iloc[::50] | (result["day_diff"] == 60).iloc[::10] | (result["day_diff"] == 90).iloc[::5] | (
+                result["day_diff"] == 120) | (result["day_diff"] == 150).iloc[::3] | (result["day_diff"] == 180) | (
+                                result["day_diff"] == 210).iloc[::2] | (result["day_diff"] == 240).iloc[::2] | (result["day_diff"] == 270).iloc[::2]| (result["day_diff"] == 300)]
+    result = result[result["S/K"] > 0.9]
+    result = result[result["S/K"] < 1.1]
 
     result = result[["close","strike_price", "price", "rf", "S/K","day_diff","date","exdate","impl_volatility","vega"]]
     result.to_csv("result/result"+file+".csv")
