@@ -32,16 +32,16 @@ def error(x, market_datas):
         error= (heston_price - market_price)**2/market_price**2/vega**2
         result += error
 
-    if (kappa < 1.01) | (kappa > 5):
-        result+= error * 10
-    if (theta < 0.01) | (theta > 1):
-        result+= error * 10
-    if (sigma < 0.01) | (sigma > 1):
-        result+= error * 10
-    if (rho < -0.88) | (rho > -0.45):
-        result+= error * 10
-    if (v0 < 0.01) | (v0 > 1):
-        result+= error * 100
+        if (kappa < 1.01) | (kappa > 5):
+            result+= error * 10
+        if (theta < 0.01) | (theta > 1):
+            result+= error * 10
+        if (sigma < 0.01) | (sigma > 1):
+            result+= error * 10
+        if (rho < -0.88) | (rho > -0.45):
+            result+= error * 10
+        if (v0 < 0.01) | (v0 > 1):
+            result+= error * 100
     return result
 
 if __name__ == '__main__':
