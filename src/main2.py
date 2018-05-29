@@ -18,7 +18,7 @@ def calibrate(init_val, market_datas):
     opt = minimize(error, init_val, args = (market_datas,),
                    bounds = ((0.1, 0.5),(0.01, 0.4), (0.1,0.99),(-0.99,-0.045),(0.01,0.5),
                              (1,5),(0.01, 0.5),(0.01,0.6), (-0.89,-0.45),(0.01,0.5)),
-                   method='L-BFGS-B',options = {'maxiter': 20})
+                   method='Nelder-Mead',options = {'maxiter': None})
     # opt = fmin(error, init_val, args=(market_datas,),maxiter= 20)
     return opt
 
@@ -34,19 +34,31 @@ def error(x, market_datas):
 
         heston_price = mutiheston.call_price(kappa1, theta1, sigma1, rho1, kappa2, theta2, sigma2, rho2, v01, v02, r, T, s0, k)
 
-        result += (heston_price - market_price)**2/market_price**2/vega**2
+        errorNum = (heston_price - market_price)**2/market_price**2/vega**2
+        result+= errorNum
+
+        if (kappa1 < 0.01) | (kappa1 > 3) | (kappa2 < 1.01) | (kappa2 > 5):
+            result+= errorNum * 10
+        if (theta1 < 0.01) | (theta1 > 1) | (theta2 < 0.01) | (theta2 > 1):
+            result+= errorNum * 10
+        if (sigma1 < 0.01) | (sigma1 > 2) | (sigma2 < 0.01) | (sigma2 > 0.5):
+            result+= errorNum * 10
+        if (rho1 < -0.88) | (rho1 > -0.45) | (rho2 < -0.98) | (rho2 > -0.35):
+            result+= errorNum * 10
+        if (v01 < 0.01) | (v01 > 1) | (v02 < 0.01) | (v02 > 1):
+            result+= errorNum * 100
     return result
 
 if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2010"]:
+    for yearNumber in ["2011"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
         # init_val = [1.1, 0.1, 0.4, -0.6, 0.1]
-        init_val = [0.2, 0.1, 0.8, -0.8, 0.1, 2, 0.1, 0.5, -0.8, 0.1]
+        init_val = [0.2, 0.1, 0.8, -0.8, 0.2, 2, 0.1, 0.5, -0.8, 0.2]
         #calibration of parameters
         # [kappa, theta, sigma, rho, v0] = calibrate(init_val, market_datas).x
         # print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
@@ -57,7 +69,7 @@ if __name__ == '__main__':
 
         print (("error: {0}").format(error(test.x,market_datas)/len(market_datas)))
         result = pd.DataFrame([test])
-        result.to_csv("cal"+yearNumber+".csv")
+        result.to_csv("cal"+yearNumber+"twofactor.csv")
 
     #
     # market_prices = np.array([])

@@ -48,11 +48,11 @@ if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2012"]:
+    for yearNumber in ["2011","2012"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
-        init_val = [1.1, 0.1, 0.4, -0.6, 0.1]
+        init_val = [2, 0.1, 0.4, -0.6, 0.1]
         # init_val = [1.7857335413857758, 0.09828053359611841, 0.76161049388424428, -0.8383242759610362, 0.1]
 
         test = calibrate(init_val, market_datas)
