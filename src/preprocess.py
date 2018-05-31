@@ -18,6 +18,7 @@ for file in file_list:
 
     date_format = "%Y%m%d"
     result["date"] = pd.to_datetime(result["date"], format=date_format)
+    result["weekNo"] = pd.to_datetime(result["date"], format=date_format).dt.week
     result["exdate"] = pd.to_datetime(result["exdate"], format=date_format)
     result["day_diff"] = result["exdate"] - result["date"]
     result["day_diff"] = result["day_diff"].astype('timedelta64[D]')
@@ -31,7 +32,7 @@ for file in file_list:
     result = result[result["S/K"] > 0.9]
     result = result[result["S/K"] < 1.1]
 
-    result = result[["close","strike_price", "price", "rf", "S/K","day_diff","date","exdate","impl_volatility","vega"]]
+    result = result[["close","strike_price", "price", "rf", "S/K","day_diff","weekNo","date","exdate","impl_volatility","vega"]]
     result.to_csv("result/result"+file+".csv")
 
 
