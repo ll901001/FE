@@ -17,7 +17,7 @@ def calibrateParam(init_para, market_datas, vols):
 
     paraEs = init_para
 
-    optParam = minimize(errorParameters, paraEs, args = (market_datas, vols), bounds = ((1.01, 5), (0.01, 1), (0.01, 1), (-0.88, -0.45), (0.01, 1)), method='Nelder-Mead', options = {'maxiter': None})
+    optParam = minimize(errorParameters, paraEs, args = (market_datas, vols), bounds = ((1.01, 5), (0.01, 1), (0.01, 1), (-0.88, -0.45), (0.01, 1)), method='Nelder-Mead', options = {'maxiter': 50})
     param = optParam.x
 
     return param
@@ -26,7 +26,7 @@ def calibrateVol (init_para, market_datas, vols):
     for i in range(1,52):
         v0 = vols[i-1]
 
-        optV  = minimize(errorVol, v0, args = (market_datas,init_para, i), method='Nelder-Mead', options = {'maxiter': None})
+        optV  = minimize(errorVol, v0, args = (market_datas,init_para, i), method='Nelder-Mead', options = {'maxiter': 50})
         v0result = optV.x[0]
         vols[i-1] = v0result
     return vols
@@ -82,17 +82,18 @@ if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2013"]:
+    for yearNumber in ["2015","2016","2017"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
         init_val = [2, 0.1, 0.4, -0.6]
-        vols = np.repeat(0.1,52)
+        vols = np.repeat(0.1,53)
         # init_val = [1.7857335413857758, 0.09828053359611841, 0.76161049388424428, -0.8383242759610362, 0.1]
         sumNum = 10000
 
         while True:
             params = calibrateParam(init_val, market_datas, vols)
+            init_val = params
             vols = calibrateVol(params, market_datas, vols)
             if ((sumNum - sum(vols))**2 < 100):
                 break
