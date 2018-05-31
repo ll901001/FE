@@ -1,7 +1,7 @@
-#
 from src import black_sholes, heston,reader
 from scipy.optimize import minimize, fmin
 import pandas as pd
+import numpy as np
 
 #sample market data
 def sample_data():
@@ -13,19 +13,33 @@ def sample_data():
     return (header, market_datas)
 
 #parameter calibration(kappa, theta, sigma, rho, v0)
-def calibrate(init_val, market_datas):
+def calibrateParam(init_para, market_datas, vols):
 
-    opt = minimize(error, init_val, args = (market_datas,), bounds = ((1.01,5),(0.01,1),(0.01, 1),(-0.88,-0.45),(0.01,1)), method='Nelder-Mead',options = {'maxiter': None})
-    # opt = fmin(error, init_val, args=(market_datas,),maxiter= 20)
-    return opt
+    paraEs = init_para
 
-def error(x, market_datas):
-    kappa, theta, sigma, rho, v0 = x
-    print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}, v0:{4}".format(kappa, theta, sigma, rho, v0))
+    optParam = minimize(errorParameters, paraEs, args = (market_datas, vols), bounds = ((1.01, 5), (0.01, 1), (0.01, 1), (-0.88, -0.45), (0.01, 1)), method='Nelder-Mead', options = {'maxiter': None})
+    param = optParam.x
+
+    return param
+
+def calibrateVol (init_para, market_datas, vols):
+    for i in range(1,52):
+        v0 = vols[i-1]
+
+        optV  = minimize(errorVol, v0, args = (market_datas,init_para, i), method='Nelder-Mead', options = {'maxiter': None})
+        v0result = optV.x[0]
+        vols[i-1] = v0result
+    return vols
+
+
+def errorParameters(x, market_datas, vols):
+    kappa, theta, sigma, rho = x
+    print ("kappa:{0}, theta:{1}, sigma:{2}, rho:{3}".format(kappa, theta, sigma, rho))
     result = 0.0
     for market_data in market_datas:
-        s0, k, market_price, r, T, vega = market_data
-        # print ("s0:{0}, k:{1}, market_price:{2}, r:{3}, T:{4}".format(s0, k, market_price, r, T))
+        s0, k, market_price, r, T, vega, weekNo = market_data
+
+        v0 = vols[int(weekNo)-1]
 
         heston_price = heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k)
 
@@ -40,30 +54,57 @@ def error(x, market_datas):
             result+= error * 10
         if (rho < -0.88) | (rho > -0.45):
             result+= error * 10
-        if (v0 < 0.01) | (v0 > 1):
-            result+= error * 100
     return result
+
+def errorVol(x, market_datas, parameters, i):
+    v0 = x
+    kappa, theta, sigma, rho = parameters
+    result = 0.0
+    print ("v0:{0}".format(v0))
+
+    for market_data in market_datas:
+        s0, k, market_price, r, T, vega, weekNo = market_data
+
+        # print ("s0:{0}, k:{1}, market_price:{2}, r:{3}, T:{4}".format(s0, k, market_price, r, T))
+
+        if (int(weekNo) == i):
+            heston_price = heston.call_price(kappa, theta, sigma, rho, v0[0], r, T, s0, k)
+
+            error = (heston_price - market_price) ** 2 / market_price ** 2 / vega ** 2
+            result += error
+
+            if (v0 < 0) | (v0 > 100):
+                result += error * 10
+    return result
+
 
 if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2011","2012"]:
+    for yearNumber in ["2013"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
-        init_val = [2, 0.1, 0.4, -0.6, 0.1]
+        init_val = [2, 0.1, 0.4, -0.6]
+        vols = np.repeat(0.1,52)
         # init_val = [1.7857335413857758, 0.09828053359611841, 0.76161049388424428, -0.8383242759610362, 0.1]
+        sumNum = 10000
 
-        test = calibrate(init_val, market_datas)
+        while True:
+            params = calibrateParam(init_val, market_datas, vols)
+            vols = calibrateVol(params, market_datas, vols)
+            if ((sumNum - sum(vols))**2 < 100):
+                break
+            sumNum = sum(vols)
         #     init_val = test.x
         #
         #     if test.x[4] > 0:
         #         break;
 
-        print (("error: {0}").format(error(test.x,market_datas)/len(market_datas)))
-        result = pd.DataFrame([test])
-        result.to_csv("cal"+yearNumber+".csv")
+        print (("error: {0}").format(errorParameters(params, market_datas,vols) / len(market_datas)))
+        result = pd.DataFrame([params, vols])
+        result.to_csv("calonefactor"+yearNumber+".csv")
 
     #
     # market_prices = np.array([])
