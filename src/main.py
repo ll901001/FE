@@ -46,13 +46,13 @@ def errorParameters(x, market_datas, vols):
         error= (heston_price - market_price)**2/market_price**2/vega**2
         result += error
 
-        if (kappa < 1.01) | (kappa > 5):
+        if (kappa < 0.01) | (kappa > 5):
             result+= error * 10
         if (theta < 0.01) | (theta > 1):
             result+= error * 10
         if (sigma < 0.01) | (sigma > 1):
             result+= error * 10
-        if (rho < -0.88) | (rho > -0.45):
+        if (rho < -0.99) | (rho > -0.45):
             result+= error * 10
     return result
 
@@ -82,7 +82,7 @@ if __name__ == '__main__':
     #load market data
     header, market_datas = sample_data()
 
-    for yearNumber in ["2015","2016","2017"]:
+    for yearNumber in ["2017"]:
 
         market_datas = reader.getArrays(yearNumber)
     #Initialize kappa, theta, sigma, rho, v0
