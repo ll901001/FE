@@ -1,15 +1,24 @@
-
-import numpy as np
-
-
+import pandas as pd
+from src import main, reader
 
 if __name__ == '__main__':
+    result = pd.read_csv("calonefactor2014.csv")
 
-    for i in np.repeat(0.1,52):
-        i
-    print (np.repeat(0.1,52)[0])
+    vol = result.iloc[[1]]
+    vol = vol.as_matrix()
+    vol = vol[0]
+    vol = vol[1:]
 
-    x = [23,4123,3232.1,123,21]
-    print ((sum(x)-100)**2<100)
-# kappa1:0.013789589529560185, theta1:0.1181715674492754, sigma1:1.9802905252214114, rho1:-0.7809060833114745, v01:0.5665887740509341
-# kappa2:1.066818368817424, theta2:0.12876740254899785, sigma2:0.19064834296589925, rho2:-0.962872431440924, v02:0.010537896678683812
+    para = result.iloc[[0]]
+    para = para.as_matrix()
+    para = para[0]
+    para = para[1:5]
+
+    md = reader.getArrays("2014")
+
+
+    err = main.errorParameters(x=para,market_datas=md,vols=vol)
+    print (err)
+
+    # 2013:
+    # 2014: 1.6679716081939802

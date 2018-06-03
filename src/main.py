@@ -3,16 +3,6 @@ from scipy.optimize import minimize, fmin
 import pandas as pd
 import numpy as np
 
-#sample market data
-def sample_data():
-    x = [x.split() for x in open('marketdata.txt')]
-    header = x[0]
-    market_datas = []
-    for market_data in x[1:]:
-        market_datas += [map(lambda z:float(z), market_data)]
-    return (header, market_datas)
-
-#parameter calibration(kappa, theta, sigma, rho, v0)
 def calibrateParam(init_para, market_datas, vols):
 
     paraEs = init_para
@@ -77,18 +67,23 @@ def errorVol(x, market_datas, parameters, i):
                 result += error * 10
     return result
 
+#sample market data
+def sample_data():
+    x = [x.split() for x in open('marketdata.txt')]
+    header = x[0]
+    market_datas = []
+    for market_data in x[1:]:
+        market_datas += [map(lambda z:float(z), market_data)]
+    return (header, market_datas)
 
 if __name__ == '__main__':
-    #load market data
-    header, market_datas = sample_data()
 
-    for yearNumber in ["2017"]:
+    for yearNumber in ["2013","2014","2015","2016","2017"]:
 
         market_datas = reader.getArrays(yearNumber)
-    #Initialize kappa, theta, sigma, rho, v0
+        #Initialize kappa, theta, sigma, rho, v0
         init_val = [2, 0.1, 0.4, -0.6]
         vols = np.repeat(0.1,53)
-        # init_val = [1.7857335413857758, 0.09828053359611841, 0.76161049388424428, -0.8383242759610362, 0.1]
         sumNum = 10000
 
         while True:
@@ -108,16 +103,16 @@ if __name__ == '__main__':
         result.to_csv("calonefactor"+yearNumber+".csv")
 
     #
-    # market_prices = np.array([])
-    # heston_prices = np.array([])
-    # K = np.array([])
-    # for market_data in market_datas:
-    #     s0, k, market_price, r, T = market_data
-    #     heston_prices = np.append(heston_prices, heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k))
-    #     market_prices = np.append(market_prices, market_price)
-    #     K = np.append(K,k)
-    # #plot result
-    # plt.plot(K, market_prices, 'g*',K, heston_prices, 'b')
-    # plt.xlabel('Strike (K)')
-    # plt.ylabel('Price')
-    # plt.show()
+    market_prices = np.array([])
+    heston_prices = np.array([])
+    K = np.array([])
+    for market_data in market_datas:
+        s0, k, market_price, r, T = market_data
+        heston_prices = np.append(heston_prices, heston.call_price(kappa, theta, sigma, rho, v0, r, T, s0, k))
+        market_prices = np.append(market_prices, market_price)
+        K = np.append(K,k)
+    #plot result
+    plt.plot(K, market_prices, 'g*',K, heston_prices, 'b')
+    plt.xlabel('Strike (K)')
+    plt.ylabel('Price')
+    plt.show()
